@@ -9,7 +9,7 @@
 题单：https://leetcode.cn/circle/discuss/0viNMK/
 
 ### §1.1 定长滑动窗口 · 基础
-- [ ] 1456
+- [x] 1456
 - [ ] 643
 - [ ] 1343
 - [ ] 2090
