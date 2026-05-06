@@ -53,13 +53,11 @@ for (int right = 0; right < n; right++) {
 **模板对照：**
 ```c
 // 与本 repo 模板的对应关系
-int left = 0;                                      // 这里的 left 变量实际上由 i-k+1 隐式表示
+int left = 0;
 for (int right = 0; right < n; right++) {
-    // 更新窗口状态（加入 right）
     if (isVowel(s[right])) vowel++;
     
-    if (right - left + 1 > k) {                     // 等同 left < 0 的判断逻辑
-        // 移除 left
+    if (right - left + 1 > k) {
         if (isVowel(s[left])) vowel--;
         left++;
     }
@@ -67,6 +65,46 @@ for (int right = 0; right < n; right++) {
         更新答案;
     }
 }
+```
+
+### 643. 子数组最大平均数 I
+
+> 定长滑动窗口 · 基础题 · 踩坑记录 ⭐
+
+**代码对比（第一次 → 第二次）：**
+
+| 行 | 第一次（❌） | 第二次（✅） |
+|----|------------|------------|
+| 3  | `int ans=0,aver=0;` | `int ans=INT_MIN,aver=0;` |
+
+**Bug 根因：ans 初始值选型错误**
+- `ans=0` → 数组全为负数时，任何窗口和均为负，`MAX(0, 负数) = 0` → 返回错误
+- `ans=INT_MIN` → 任何实际窗口和都 ≥ INT_MIN，正确
+
+**延伸教训：**
+- 求最大值时，初始值用 `INT_MIN`（或 `-inf`），不要想当然用 0
+- 求最小值时，初始值用 `INT_MAX`
+- 这个错误在滑动窗口、DP 中极其常见，属于**初始化惯性错误**
+- 判断依据：**可能取值的下界/上界是什么**，而不是拍脑袋给 0
+
+**次要问题：宏定义**
+```c
+#define MAX(a,b) (a>b) ? (a) : (b)   // ❌ 缺少外层括号
+#define MAX(a,b) ((a)>(b) ? (a):(b)) // ✅
+```
+第一次的宏在 `ans=MAX(ans,aver)` 赋值场景下未触发优先级 bug（赋值优先级低于三元），但写成复杂表达式时（如 `MAX(a,b) + 1`）会出错。养成习惯：**宏定义整体和每个参数都加括号**。
+
+**模板对照（与 1456 相同）：**
+```c
+// 唯一区别：初始值用 INT_MIN
+int ans = INT_MIN, sum = 0;
+for (int i = 0; i < n; i++) {
+    sum += nums[i];
+    if (i - k + 1 < 0) continue;
+    ans = MAX(ans, sum);
+    sum -= nums[i - k + 1];
+}
+return (double) ans / k;
 ```
 
 ## 常见类型
@@ -82,3 +120,5 @@ for (int right = 0; right < n; right++) {
 - `while` 不是 `if`：窗口可能需要持续收缩
 - 移除 left 时注意边界：先减再移，还是先移再减
 - 字符串题注意 `strlen` 和数组下标的对应
+- **`ans` 初始值**：求最大用 `INT_MIN`，求最小用 `INT_MAX`，不要惯性写 0（踩坑 643）
+- **宏定义的括号**：整体和每个参数都要加括号 `#define MAX(a,b) ((a)>(b)?(a):(b))`
