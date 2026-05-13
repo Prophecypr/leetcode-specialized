@@ -200,6 +200,49 @@ for (int i = 0; s[i]; i++) {
 }
 ```
 
+### 2461. 长度为 K 且元素互异的子数组最大和 ⭐
+
+> 定长滑动窗口 · 基础 · 带频率去重
+
+**相比前几题的新概念：**
+- 前几题只维护窗口和/计数，此题额外需要**判断窗口内元素是否全部互异**
+- 引入频率数组 `cnt[]` + 去重计数器 `distinct`
+- 本质是**定长窗口 + 双条件**：长度 k ✅ + 元素互异 ✅
+
+**频率跟踪模式：**
+```
+入窗时：cnt[x] 0→1 → distinct++
+出窗时：cnt[x] 1→0 → distinct--
+判断：   distinct == k → 窗口内全部互异
+```
+
+**学到什么：**
+- 用 `calloc` 开计数数组（值范围有限时，比 hash map 更快更简单）
+- `distinct` 计数器是频率去重题的通用技巧
+- 与 2090 同为进阶题：2090 加半径约束，此题加互异约束，都是**在定长窗口基础上叠加条件**
+- 本题是定长 → 变长时条件会变的过渡桥樑（2841 就是变长版）
+
+**模板对照：**
+```c
+long long ans = 0, sum = 0;
+int distinct = 0;
+int* cnt = calloc(MAX_VAL + 1, sizeof(int));
+
+for (int i = 0; i < n; i++) {
+    sum += nums[i];
+    if (cnt[nums[i]]++ == 0) distinct++;
+
+    if (i - k + 1 < 0) continue;
+
+    if (distinct == k) ans = MAX(ans, sum);
+
+    int out = nums[i - k + 1];
+    sum -= out;
+    if (--cnt[out] == 0) distinct--;
+}
+free(cnt);
+```
+
 ## 常见类型
 
 | 类型 | 特点 | 代表题 |
