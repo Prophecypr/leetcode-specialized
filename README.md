@@ -1,6 +1,6 @@
 # leetcode-specialized
 
-> C 语言 · 专题训练（螺旋上升）· 来源：[灵茶山艾府 方法A](https://leetcode.cn/discuss/post/3141566/)
+> C / C++ 语言 · 专题训练（螺旋上升）· 来源：[灵茶山艾府 方法A](https://leetcode.cn/discuss/post/3141566/)
 
 ## 方法A：十二步专题训练
 

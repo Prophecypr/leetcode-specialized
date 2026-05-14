@@ -1,9 +1,9 @@
 # Sliding Window — 滑动窗口
 
-## 模板（C）
+## 模板（C / C++）
 
+### 定长窗口
 ```c
-// 固定窗口大小
 int left = 0;
 for (int right = 0; right < n; right++) {
     // 更新窗口状态（加入 right）
@@ -16,8 +16,10 @@ for (int right = 0; right < n; right++) {
     }
     // 处理窗口结果
 }
+```
 
-// 可变窗口大小（求满足条件的最小/最大窗口）
+### 不定长窗口（求最长/最大）
+```c
 int left = 0;
 for (int right = 0; right < n; right++) {
     window[arr[right]]++;
@@ -26,12 +28,63 @@ for (int right = 0; right < n; right++) {
         window[arr[left]]--;
         left++;
     }
-    // 此时 [left, right] 是满足条件的最小窗口
-    更新答案;
+    // 此时窗口满足条件，更新答案（求最长）
+    ans = max(ans, right - left + 1);
+}
+```
+
+### 不定长窗口（求最短/最小）
+```c
+int left = 0;
+for (int right = 0; right < n; right++) {
+    window[arr[right]]++;
+    
+    while (窗口满足条件) {
+        // 在 left 右移前更新答案（求最短）
+        ans = min(ans, right - left + 1);
+        window[arr[left]]--;
+        left++;
+    }
 }
 ```
 
 ## 例题笔记
+
+### 3. 无重复字符的最长子串 ⭐
+
+> 不定长滑动窗口 · 基础 · 里程碑：首道 C++ 题 + 首道不定长题
+
+**与定长窗口的本质区别：**
+- 定长：窗口满 k 后同时移入移出，**固定大小**
+- 不定长：只控制**合法性**，不控制大小，**动态伸缩**
+
+**思路：**
+- 维护 `[left, right]` 窗口，保证窗口内无重复字符
+- `right` 每次右移加入新字符 `c`，若 `cnt[c] > 1` → **用 `while` 收缩 left** 直到 `cnt[c] == 1`
+- 每次更新 `ans = max(ans, right - left + 1)`
+
+**为什么用 `while` 不是 `if`：**
+- 连续删除多个字符才能恢复条件（比如窗口内有两个 'a' 和一个 'b'）
+- 只用 `if` 一次只能删一个，可能删完还有重复
+
+**学到什么：**
+- 不定长窗口的**核心模式**：先扩→缩到合法→更新答案
+- `unordered_map` 做频率计数，C++ 标准写法
+- `left` 指针本质上也是 `i - window + 1` 的延迟表现形式
+
+**模板对照：**
+```cpp
+int left = 0, ans = 0;
+unordered_map<char, int> cnt;
+for (int right = 0; right < n; right++) {
+    cnt[s[right]]++;
+    while (cnt[s[right]] > 1) {         // 不满足条件时收缩
+        cnt[s[left]]--;
+        left++;
+    }
+    ans = max(ans, right - left + 1);   // 更新最长
+}
+```
 
 ### 1456. 定长子串中元音的最大数目
 
@@ -324,9 +377,9 @@ return ans + s2[0];
 
 | 类型 | 特点 | 代表题 |
 |------|------|--------|
-| 固定大小 | `right-left+1 == k` 时更新答案 | 239. 滑动窗口最大值 |
-| 最长子串 | `while` 缩小直到满足条件 | 3. 无重复最长子串 |
-| 最小覆盖 | `while` 缩小直到不满足，取上一次结果 | 76. 最小覆盖子串 |
+| 定长 | 窗口大小固定 `right-left+1 == k` | 239. 滑动窗口最大值 |
+| 不定长·最长 | 扩到不合法→缩到合法→更新 | **3. 无重复最长子串** |
+| 不定长·最短 | 扩到合法→缩到不合法前更新 | 76. 最小覆盖子串 |
 | 前缀和+窗口 | 用前缀和数组快速计算区间和 | 209. 长度最小子数组 |
 
 ## 易错点
