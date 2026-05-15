@@ -201,6 +201,41 @@ for (int right = 0; right < n; right++) {
 }
 ```
 
+### 904. 水果成篮
+
+> 不定长滑动窗口 · 求最长/最大（基础）· 种类约束
+
+**思路：**
+本质是求最长子数组，其中**不同数字的种类数 ≤ 2**。
+
+**与 3/3090/1493 的对比：**
+| 题号 | 约束条件 | 判断方式 | 收缩操作 |
+|------|----------|----------|----------|
+| 3 | 每种字符 ≤1 | `cnt[c] > 1` | 只减计数 |
+| 3090 | 每种字符 ≤2 | `cnt[c] > 2` | 只减计数 |
+| 1493 | 最多 1 个 0 | `cnt0 > 1` | 只减计数 |
+| **904** | **最多 2 种** | **`cnt.size() > 2`** | **减计数 + erase** |
+
+**C++ 细节（你的学习记录）：**
+- `cnt.size()` — unordered_map 当前有多少种 key（本题中即水果种类数）
+- `cnt.erase(out)` — 当某种水果数量归零时，从 map 中移除该键
+  - 好处：`cnt.size()` 自动反映真实种类数，无需额外维护 `sum/distinct` 变量
+- `string` 支持 `.length()` 和 `.size()`；`vector<int>` 只有 `.size()`
+
+```cpp
+int left = 0, ans = 0;
+unordered_map<int, int> cnt;
+for (int right = 0; right < fruits.size(); right++) {
+    cnt[fruits[right]]++;
+    while (cnt.size() > 2) {
+        int out = fruits[left];
+        if (--cnt[out] == 0) cnt.erase(out);
+        left++;
+    }
+    ans = max(ans, right - left + 1);
+}
+```
+
 ### 1456. 定长子串中元音的最大数目
 
 > 定长滑动窗口 · 基础题
