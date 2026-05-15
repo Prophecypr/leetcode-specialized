@@ -139,6 +139,37 @@ for (int right = 0; right < n; right++) {
 }
 ```
 
+### 3634. 数组元素最小移除数
+
+> 不定长滑动窗口 · 求最长/最大（基础）· 排序 + 窗口
+
+**思路：**
+- 先排序，排序后窗口内最大值为 `nums[right]`，最小值为 `nums[left]`
+- 维护窗口满足 `nums[right] / nums[left] ≤ k`（即 `nums[left] * k ≥ nums[right]`）
+- 找最长合法子数组，答案 = `n - longest`
+- 核心思想：**最小移除数 = 总数 - 最长合法子数组**
+
+**为什么对：**
+- 移除的元素可以任意选择，不要求连续
+- 保留的部分最后必然是一个满足条件的子数组
+- 排序后窗口内连续，相当于"保留哪些元素"的问题
+
+**学到什么：**
+- **"最少移除"问题**的通用转化：`remove = n - longest_valid_subarray`
+- 排序 + 滑动窗口：当问题不要求保持原顺序时，排序可以简化判定条件
+- `1LL` 防止 `nums[left] * k` 溢出
+- `ranges::sort`（C++20）是 C++ 中最简洁的排序写法
+
+```cpp
+ranges::sort(nums);
+int left = 0, ans = 0;
+for (int right = 0; right < n; right++) {
+    while (1LL * nums[left] * k < nums[right]) left++;
+    ans = max(ans, right - left + 1);
+}
+return n - ans;
+```
+
 ### 1456. 定长子串中元音的最大数目
 
 > 定长滑动窗口 · 基础题
