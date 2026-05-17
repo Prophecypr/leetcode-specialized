@@ -236,6 +236,41 @@ for (int right = 0; right < fruits.size(); right++) {
 }
 ```
 
+### 1695. 删除子数组的最大得分
+
+> 不定长滑动窗口 · 求最长/最大（基础）· 求和版 3
+
+**与 3 的关系：**
+| 题号 | 维护量 | 求最值 | 数据结构 |
+|------|--------|--------|----------|
+| 3 | 窗口长度 | 最长 | unordered_map |
+| **1695** | **窗口和** | **最大和** | **unordered_set** |
+
+**用 `unordered_set` 代替 `unordered_map`：**
+- 本题只关心元素是否**出现过**，不关心出现**几次**
+- `set.contains(x)`（C++20）比 `map[key] > 0` 更语义化
+- 去重时：`st.erase(nums[left])` 即可，无需检查计数归零
+
+**学到什么：**
+- 当只需存在性判断时，`set` 比 `map` 更轻量
+- `contains()` 是 C++20 的语法，之前用 `st.count(x) > 0` 或 `st.find(x) != st.end()`
+- 本题是 3 的"求和变体"——把 `right - left + 1` 换成 `sum`，约束条件完全相同
+
+```cpp
+unordered_set<int> st;
+int ans = 0, sum = 0, left = 0;
+for (int x : nums) {
+    while (st.contains(x)) {
+        st.erase(nums[left]);
+        sum -= nums[left];
+        left++;
+    }
+    st.insert(x);
+    sum += x;
+    ans = max(ans, sum);
+}
+```
+
 ### 1456. 定长子串中元音的最大数目
 
 > 定长滑动窗口 · 基础题
