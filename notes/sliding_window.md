@@ -615,6 +615,36 @@ for (int i = 0; i < n; i++) {
 return total - minSum;
 ```
 
+### 2841. 几乎唯一子数组的最大和
+
+> 定长滑动窗口 · 基础 · 综合应用
+
+**与 2461 的对比：**
+| 题号 | 条件 | 做法 |
+|------|------|------|
+| 2461 ⭐ | `distinct == k`（全部互异） | 额外 distinct 计数器 |
+| **2841** | **`cnt.size() >= m`**（至少 m 种） | **`erase` + `size()`** |
+
+**学到什么：**
+- `cnt.size()` 返回 unordered_map 中不同键的数量 = 窗口内不同元素种类数
+- 归零时 `erase` 是为了让 `size()` 准确反映种类数，否则 size 不会减小
+- 本题是定长窗口的综合应用题：**窗口大小固定 + 多种类约束 + 求最大和**
+
+```cpp
+long long ans = 0, sum = 0;
+unordered_map<int, int> cnt;
+for (int right = 0; right < n; right++) {
+    sum += nums[right];
+    cnt[nums[right]]++;
+    if (right - k + 1 < 0) continue;
+    if (cnt.size() >= m) ans = max(ans, sum);
+    // 滑出
+    sum -= nums[left];
+    if (--cnt[nums[left]] == 0) cnt.erase(nums[left]);
+    left++;
+}
+```
+
 ### 1052. 爱生气的书店老板 ⭐
 
 > 定长滑动窗口 · 进阶 · 双累加器分类
