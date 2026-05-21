@@ -425,6 +425,37 @@ for (int right = 0; right < n; right++) {
 return ans < INT_MAX ? ans : 0;
 ```
 
+### 3795. 按位与运算后不同元素的最小长度 ⭐
+
+> 不定长滑动窗口 · 求最短/最小 · 不同元素和约束
+
+**与 209 的区别：**
+| 题号 | 约束 | 数据结构 | 无解返回值 |
+|------|------|----------|-----------|
+| 209 | 全部元素之和 ≥ target | `int sum` | `0` |
+| **3795** | **不同元素之和** ≥ k | **unordered_map** | **`-1`** |
+
+**关键逻辑：**
+- 只统计**不同元素**的和：同一个值出现多次也只算一次
+- 入窗时 `cnt[x] == 1` 才加 sum（第一次出现）
+- 出窗时 `cnt[x] == 0` 才减 sum（完全消失）
+- 无解返回 `-1` 而不是 0，因为本题的"没有"和"长度为 0"含义不同
+
+```cpp
+int ans = INT_MAX, sum = 0, left = 0;
+unordered_map<int, int> cnt;
+for (int right = 0; right < n; right++) {
+    if (cnt[nums[right]]++ == 0) sum += nums[right];
+
+    while (sum >= k) {
+        ans = min(ans, right - left + 1);
+        if (--cnt[nums[left]] == 0) sum -= nums[left];
+        left++;
+    }
+}
+return ans == INT_MAX ? -1 : ans;
+```
+
 ### 1456. 定长子串中元音的最大数目
 
 > 定长滑动窗口 · 基础题
